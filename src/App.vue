@@ -1,26 +1,24 @@
 <template>
 <div id="app">
-    <div id="menu"></div>
+    <div id="menu">
+        <Menu></Menu>
+    </div>
     <div id="content">
-        <NalogZaSkladistenje />
-        <!-- <PlanProvere /> -->
+        <router-view></router-view>
     </div>
     <div id="footer"></div>
 </div>
 </template>
 
 <script>
-// import PlanProvere from './components/PlanProvere'
-import NalogZaSkladistenje from './components/NalogZaSkladistenje'
+import Menu from "./components/Menu"
 export default {
     name: 'App',
     components: {
-        // PlanProvere,
-        NalogZaSkladistenje
+        Menu
     }
-}
+    }
 </script>
 
 <style>
-#app {}
 </style>
