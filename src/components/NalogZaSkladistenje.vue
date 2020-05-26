@@ -110,6 +110,7 @@ export default {
         },
         sacuvajNalog(evt) {
             evt.preventDefault()
+            
             console.log('sacuvaj nalog')
         },
         resetujFormu(evt) {
