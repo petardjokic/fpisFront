@@ -1,9 +1,9 @@
 <template>
 <b-jumbotron>
-    <template v-slot:header>Plan Provere</template>
+    <template v-slot:header>Internal check plan</template>
 
     <template v-slot:lead>
-        <b-alert :show=message.show :variant=message.variant dismissible>{{message.text}}</b-alert>
+        <b-alert :show=message.show :variant=message.variant>{{message.text}}</b-alert>
     </template>
 
     <hr class="my-4">
@@ -13,45 +13,47 @@
             <b-col cols=12>
                 <b-form @submit="sacuvajPlan" @reset="resetujFormu">
                     <b-form inline @submit="nadjiPlan">
-                        <b-input-group prepend="Sifra" class="mb-2 mr-sm-2 mb-sm-0">
-                            <b-form-input id="inline-form-input-sifra" v-model="form.id" type="number" placeholder="ID plana provere:"></b-form-input>
+                        <b-input-group prepend="ID" class="mb-2 mr-sm-2 mb-sm-0">
+                            <b-form-input id="inline-form-input-sifra" v-model="form.id" type="number" placeholder="Plan ID:"></b-form-input>
                         </b-input-group>
-                        <b-button type="submit" variant="outline-primary">Pronadji</b-button>
+                        <b-button type="submit" variant="outline-primary">Search</b-button>
                     </b-form>
 
-                    <b-form-group id="input-group-datum" label="Datum:" label-for="input-datum">
-                        <b-form-input id="input-datum" v-model="form.date" type="date" required placeholder="Unesi datum"></b-form-input>
+                    <b-form-group id="input-group-datum" label="Date:" label-for="input-datum">
+                        <b-form-input id="input-datum" v-model="form.date" type="date" required placeholder="Enter date"></b-form-input>
                     </b-form-group>
 
-                    <b-form-group id="input-group-predmetProvere" label="Predmet provere:" label-for="input-predmetProvere">
-                        <b-form-input id="input-predmetProvere" v-model="form.checkSubject" required placeholder="Unesi predmet provere"></b-form-input>
+                    <b-form-group id="input-group-predmetProvere" label="Check subject:" label-for="input-predmetProvere">
+                        <b-form-input id="input-predmetProvere" v-model="form.checkSubject" required placeholder="Enter check subject"></b-form-input>
                     </b-form-group>
 
-                    <b-form-group id="input-group-opis" label="Opis zahteva:" label-for="input-opis">
-                        <b-form-textarea id="input-opis" v-model="form.description" required placeholder="Unesi opis zahteva" rows="3" max-rows="6"></b-form-textarea>
+                    <b-form-group id="input-group-opis" label="Description:" label-for="input-opis">
+                        <b-form-textarea id="input-opis" v-model="form.description" required placeholder="Enter description" rows="3" max-rows="6"></b-form-textarea>
                     </b-form-group>
                     <b-row>
                         <b-col>
-                            <b-form-group id="input-group-posaljilac" label="Poslao:" label-for="input-posaljilac">
+                            <b-form-group id="input-group-posaljilac" label="Sender:" label-for="input-posaljilac">
                                 <b-form-select id="input-posaljilac" v-model="form.sender.id" :options="optionsZaposleni"></b-form-select>
                             </b-form-group>
                         </b-col>
                         <b-col>
-                            <b-form-group id="input-group-primalac" label="Primio:" label-for="input-primalac">
+                            <b-form-group id="input-group-primalac" label="Receiver:" label-for="input-primalac">
                                 <b-form-select id="input-primalac" v-model="form.receiver.id" :options="optionsZaposleni"></b-form-select>
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-button type="submit" variant="outline-primary">Sacuvaj</b-button>
-                    <b-button type="reset" variant="outline-danger">Resetuj formu</b-button>
+                    <b-button-group>
+                    <b-button type="submit" variant="outline-primary">Ok</b-button>
+                    <b-button @click=obrisiPlan variant="outline-danger">Delete</b-button>
+                    </b-button-group>
                 </b-form>
 
             </b-col>
         </b-row>
     </b-container>
-    <b-card class="mt-3" header="Form Data Result">
+    <!-- <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
-    </b-card>
+    </b-card> -->
 </b-jumbotron>
 </template>
 
@@ -96,6 +98,7 @@ export default {
     methods: {
         nadjiPlan(evt) {
             evt.preventDefault()
+            this.resetujMessage()
             axios.get(FpisService.BASE_URL + FpisService.INTERNAL_CHECK_PLAN + this.form.id).then(response => {
                 console.log(response.data)
                 this.form.id = response.data.id
@@ -111,17 +114,28 @@ export default {
                 console.log(error.response.data.message)
             })
         },
+        obrisiPlan(){
+            var url = FpisService.BASE_URL + FpisService.INTERNAL_CHECK_PLAN + this.form.id
+            axios.delete(url).then(() => {
+                this.resetujFormu()
+                this.message.text = "Plan deleted!"
+                this.message.show = true;
+                this.message.variant = "success"
+            })
+        },
         sacuvajPlan(evt) {
             evt.preventDefault()
             axios.post(FpisService.BASE_URL + FpisService.INTERNAL_CHECK_PLAN, this.form).then(response => {
-                this.message.text = "Saved.ID:" + response.data.id
+                this.resetujFormu()
+                this.message.text = "Saved! ID: " + response.data.id
                 this.message.show = true;
                 this.message.variant = "success"
                 console.log("Saved.ID:" + response.data.id)
+            }).catch(error => {
+                console.log(error.response.data)
             })
         },
-        resetujFormu(evt) {
-            evt.preventDefault()
+        resetujFormu() {
             // Reset our form values
             this.form.id = ''
             this.form.date = ''
@@ -129,6 +143,13 @@ export default {
             this.form.description = ''
             this.form.sender = {}
             this.form.receiver = {}
+            this.message = {
+                text: '',
+                variant: 'primary',
+                show: false
+            }
+        },
+        resetujMessage() {
             this.message = {
                 text: '',
                 variant: 'primary',

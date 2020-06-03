@@ -7,9 +7,8 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item to="plan-provere">Plan</b-nav-item>
-        <b-nav-item href="nalog">Nalog</b-nav-item>
-        <b-nav-item href="nalog-iframe">Iframe</b-nav-item>
+        <b-nav-item to="plan-provere">Plan check</b-nav-item>
+        <b-nav-item href="nalog-iframe">Storage Warrant</b-nav-item>
       </b-navbar-nav>
 
         
