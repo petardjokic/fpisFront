@@ -121,6 +121,11 @@ export default {
                 this.message.text = "Plan deleted!"
                 this.message.show = true;
                 this.message.variant = "success"
+            }).catch(error => {
+                this.message.text = "Invalid ID!"
+                this.message.show = true;
+                this.message.variant = "danger"
+                console.log(error.response.data.message)
             })
         },
         sacuvajPlan(evt) {
